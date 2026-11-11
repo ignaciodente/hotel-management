@@ -31,6 +31,7 @@ public class User extends Person implements Identifiable {
         this.active = active;
         this.permission = new HashSet<>();
         this.type=type;
+        defaultPermissions();
     }
 
     //Methods
@@ -100,6 +101,9 @@ public class User extends Person implements Identifiable {
     protected boolean removePermission(Permission p){
         return permission.remove(p);
     }
+
+
+
 
 
 

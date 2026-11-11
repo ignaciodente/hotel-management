@@ -14,7 +14,7 @@ public class Administrator extends User{
 
     public Administrator(String name, String lastName, String dni, String username, String password) {
         super(name, lastName, dni, username, password, true, UserType.ADMINISTRATOR);
-        defaultPermissions();
+
     }
 
     //Methods
