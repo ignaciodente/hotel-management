@@ -2,6 +2,7 @@ package hotelmanagement.model;
 
 import hotelmanagement.enums.Permission;
 import hotelmanagement.enums.UserType;
+import hotelmanagement.exceptions.UserException;
 import hotelmanagement.interfaces.Identifiable;
 
 import java.util.HashSet;
@@ -73,6 +74,16 @@ public class User extends Person implements Identifiable {
 
     public String getType() {
         return type.name();
+    }
+
+    public boolean authenticate (String username, String password) throws UserException{
+      if(!this.active){
+          throw new UserException("User account is inactive");
+      }
+      if(username==null || password==null){
+          throw new UserException("Username and password cannot be null");
+      }
+      return this.username.equals(username) && this.password.equals(password);
     }
 
     protected void defaultPermissions(){

@@ -44,7 +44,7 @@ public class Administrator extends User{
     }
 
 
-    public void revokePermission(User u, Permission p) throws PermissionException,UserException{
+    public boolean revokePermission(User u, Permission p) throws PermissionException,UserException{
         if (!this.isActive()) {
             throw new UserException("An inactive administrator cannot perform this action.");
         }
@@ -67,7 +67,7 @@ public class Administrator extends User{
             throw new PermissionException("The user does not have this permission.");
         }
 
-        u.removePermission(p);
+        return u.removePermission(p);
     }
 
 

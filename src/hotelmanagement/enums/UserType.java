@@ -1,29 +1,30 @@
 package hotelmanagement.enums;
 
 import java.util.List;
+import java.util.Set;
 
 public enum UserType {
 
-    ADMINISTRATOR(List.of(
+    ADMINISTRATOR(Set.of(
             Permission.MANAGE_USERS,
             Permission.MANAGE_ROOMS,
             Permission.PERFORM_BACKUP,
             Permission.MANAGE_RESERVATIONS,
             Permission.DO_CHECK_IN_OUT
     )),
-    RECEPTIONIST(List.of(
+    RECEPTIONIST(Set.of(
             Permission.MANAGE_RESERVATIONS,
             Permission.DO_CHECK_IN_OUT,
             Permission.MANAGE_ROOMS
     ));
 
-    private final List<Permission> defaultPermissions;
+    private final Set<Permission> defaultPermissions;
 
-    UserType(List<Permission> defaultPermissions) {
+    UserType(Set<Permission> defaultPermissions) {
         this.defaultPermissions = defaultPermissions;
     }
 
-    public List<Permission> getDefaultPermissions() {
+    public Set<Permission> getDefaultPermissions() {
         return defaultPermissions;
     }
 
