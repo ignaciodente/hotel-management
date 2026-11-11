@@ -3,6 +3,7 @@ package hotelmanagement.model;
 import hotelmanagement.interfaces.Identifiable;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,5 +89,55 @@ public class Stay implements Identifiable {
 
     public Double getTotalAmount() {
         return totalAmount;
+    }
+
+    /**
+     * Indicates whether the guests are still in the room (no check-out yet).
+     *
+     * @return true if the stay has not been closed
+     */
+    public boolean isActive() {
+        return checkOutDate == null;
+    }
+
+    /**
+     * Returns the total amount of the stay. While it is active, it is calculated
+     * up to now with the given base price. Once closed, it returns the amount
+     * saved at check-out, so it does not change if the base price changes.
+     *
+     * @param basePrice the hotel's base price per night
+     * @return the total amount of the stay
+     */
+    public double calculateTotal(double basePrice) {
+        if (!isActive()) {
+            return totalAmount;
+        }
+        return computeTotal(LocalDateTime.now(), basePrice);
+    }
+
+    /**
+     * Closes the stay at check-out and saves its final amount.
+     *
+     * @param checkOut  date and time of the check-out
+     * @param basePrice the hotel's base price per night
+     */
+    public void close(LocalDateTime checkOut, double basePrice) {
+        if (!isActive()) {
+            throw new IllegalStateException("Stay " + stayId + " is already closed");
+        }
+        this.totalAmount = computeTotal(checkOut, basePrice);
+        this.checkOutDate = checkOut;
+    }
+
+    /**
+     * Calculates the amount from check-in to the given moment.
+     * At least one night is always charged.
+     */
+    private double computeTotal(LocalDateTime end, double basePrice) {
+        long nights = ChronoUnit.DAYS.between(checkInDate.toLocalDate(), end.toLocalDate());
+        if (nights < 1) {
+            nights = 1;
+        }
+        return nights * basePrice * getRoom().getLevel().getMultiplier();
     }
 }
