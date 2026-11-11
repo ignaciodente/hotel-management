@@ -66,7 +66,7 @@ public class Room implements Identifiable {
 
     public void changeStatus(RoomStatus status, String reason) {
         this.status = status;
-        
+
         if (status == RoomStatus.AVAILABLE) {
             this.unavailableReason = null;
         } else {
