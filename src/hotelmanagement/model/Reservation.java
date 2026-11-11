@@ -1,6 +1,7 @@
 package hotelmanagement.model;
 
 import hotelmanagement.enums.ReservationStatus;
+import hotelmanagement.exceptions.InvalidReservationException;
 import hotelmanagement.interfaces.Identifiable;
 
 import java.time.LocalDate;
@@ -73,6 +74,18 @@ public class Reservation implements Identifiable {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
+    }
+
+    public boolean overlapsWith(LocalDate from, LocalDate to) {
+        return startDate.isBefore(to) && from.isBefore(endDate);
+    }
+
+    public void cancel() throws InvalidReservationException {
+        if (status != ReservationStatus.ACTIVE) {
+            throw new InvalidReservationException("Reservation " + reservationId
+                    + " cannot be cancelled because it is " + status);
+        }
+        status = ReservationStatus.CANCELLED;
     }
 
     @Override
