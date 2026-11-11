@@ -5,15 +5,15 @@ import java.util.Objects;
 public class Person {
 
     //Attributes
-    private String name;
+    private String firstName;
     private String lastName;
     private String dni;
 
     //constructor model
 
 
-    public Person(String name, String lastName, String dni) {
-        this.name = name;
+    public Person(String firstName, String lastName, String dni) {
+        this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;
     }
@@ -22,11 +22,11 @@ public class Person {
 
 
     public String getName() {
-        return name;
+        return firstName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.firstName = name;
     }
 
     public String getLastName() {
@@ -45,8 +45,8 @@ public class Person {
         this.dni = dni;
     }
 
-    public String getNombreCompleto(){
-        return name+" "+lastName;
+    public String getFullName(){
+        return firstName+" "+lastName;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Person {
     @Override
     public String toString() {
         return
-                "name='" + name + ", " +
+                "fistName='" + firstName + ", " +
                         ", lastName='" + lastName + ", " +
                         ", dni='" + dni + ", ";
     }

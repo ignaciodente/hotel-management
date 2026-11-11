@@ -12,7 +12,7 @@ public class Administrator extends User{
 
     //Constructor Model
 
-    public Administrator(String name, String lastName, String dni, int idUsuario, String username, String password) {
+    public Administrator(String name, String lastName, String dni, String username, String password) {
         super(name, lastName, dni, username, password, true, UserType.ADMINISTRATOR);
         defaultPermissions();
     }
