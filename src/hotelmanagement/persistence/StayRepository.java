@@ -2,10 +2,8 @@ package hotelmanagement.persistence;
 
 import hotelmanagement.generics.Registry;
 import hotelmanagement.interfaces.Repository;
-import hotelmanagement.model.Guest;
 import hotelmanagement.model.Stay;
 
-import javax.swing.plaf.synth.Region;
 import java.sql.ResultSet;
 import java.util.List;
 

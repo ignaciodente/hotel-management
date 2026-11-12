@@ -1,10 +1,9 @@
 package hotelmanagement.persistence;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.model.Room;
+
 import java.sql.ResultSet;
 import java.util.List;
-
-import hotelmanagement.persistence.DatabaseConnection;
 
 public class RoomRepository implements Repository{
 

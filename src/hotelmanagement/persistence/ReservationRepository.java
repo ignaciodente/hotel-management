@@ -1,10 +1,7 @@
 package hotelmanagement.persistence;
 import hotelmanagement.generics.Registry;
 import hotelmanagement.interfaces.Repository;
-import hotelmanagement.model.Guest;
 import hotelmanagement.model.Reservation;
-import hotelmanagement.model.Room;
-import hotelmanagement.model.User;
 
 import java.sql.ResultSet;
 import java.util.List;
