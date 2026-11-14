@@ -1,7 +1,6 @@
 package hotelmanagement.exceptions;
 
-public class AccessDeniedException extends RuntimeException {
+public class AccessDeniedException extends Exception {
     public AccessDeniedException() {
-        super("AccessDenied");
-    }
+        super("Access Denied"); }
 }
