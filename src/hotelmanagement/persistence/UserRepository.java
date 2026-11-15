@@ -30,11 +30,11 @@ public class UserRepository implements Repository<User> {
                 ps.setString(3, user.getDni());
                 ps.setString(4, user.getUsername());
                 ps.setString(5, user.getPassword());
-                ps.setString(6, user.getType());
+                ps.setString(6, user.getType().toString());
                 ps.setBoolean(7, user.isActive());
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
-                    if (keys.next()) user.setIdUser(keys.getInt(1));
+                    if (keys.next()) user.setId(keys.getInt(1));
                 }
                 savePermissions(user);
                 con.commit();
@@ -64,7 +64,7 @@ public class UserRepository implements Repository<User> {
                 ps.setString(3, user.getDni());
                 ps.setString(4, user.getUsername());
                 ps.setString(5, user.getPassword());
-                ps.setString(6, user.getType());
+                ps.setString(6, user.getType().toString());
                 ps.setBoolean(7, user.isActive());
                 ps.setInt(8, user.getId());
                 ps.executeUpdate();
@@ -158,12 +158,9 @@ public class UserRepository implements Repository<User> {
         }
 
         int id = rs.getInt("user_id");
-        user.setIdUser(id);
+        user.setId(id);
         user.setActive(rs.getBoolean("active"));
-        //use hashSet because we cannot access it any other way
-        HashSet<Permission> userPermissions = user.getPermission();
-        userPermissions.clear();                       // remove the role's default permissions
-        userPermissions.addAll(loadPermissions(id));   // load the ones saved in the database
+        user.setPermissions(loadPermissions(id));   // replaces the role's default permissions with the saved ones
         return user;
     }
 
@@ -176,7 +173,7 @@ public class UserRepository implements Repository<User> {
         }
         try (PreparedStatement ins = con.prepareStatement(
                 "INSERT INTO user_permission (user_id, permission) VALUES (?, ?)")) {
-            for (Permission p : u.getPermission()) {
+            for (Permission p : u.getPermissions()) {
                 ins.setInt(1, u.getId());
                 ins.setString(2, p.name());
                 ins.addBatch();

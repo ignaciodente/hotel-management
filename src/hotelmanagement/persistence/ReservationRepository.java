@@ -1,9 +1,14 @@
 package hotelmanagement.persistence;
+import hotelmanagement.enums.ReservationStatus;
+import hotelmanagement.exceptions.EntityNotFoundException;
 import hotelmanagement.generics.Registry;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;
+import hotelmanagement.model.Guest;
 import hotelmanagement.model.Reservation;
+import hotelmanagement.model.Room;
+import hotelmanagement.model.User;
 
 import java.sql.ResultSet;
 import java.util.List;
@@ -14,11 +19,11 @@ import java.util.ArrayList;
 public class ReservationRepository implements Repository<Reservation> {
 
     // Preloaded registries, used to resolve foreign keys to objects
-    private final Registry guests;
-    private final Registry rooms;
-    private final Registry users;
+    private final Registry<Guest> guests;
+    private final Registry<Room> rooms;
+    private final Registry<User> users;
 
-    public ReservationRepository(Registry g, Registry r, Registry u) {
+    public ReservationRepository(Registry<Guest> g, Registry<Room> r, Registry<User> u) {
         this.guests = g;
         this.rooms = r;
         this.users = u;
@@ -47,7 +52,6 @@ public class ReservationRepository implements Repository<Reservation> {
         }
     }
 
-    /*comento esto porque requiero el find by id de repositorios
     //makes a row into an object
     private Reservation createFromRow(ResultSet rs) throws SQLException, DataAccessException {
         try {
@@ -68,7 +72,7 @@ public class ReservationRepository implements Repository<Reservation> {
             throw new DataAccessException("Error in reference when uploading the reservation "
                     + rs.getInt("reservation_id") + ": " + e.getMessage());
         }
-    }*/
+    }
 
 
     //inserts a reserve in the database
@@ -117,7 +121,6 @@ public class ReservationRepository implements Repository<Reservation> {
         }
     }
 
-    //HAY UN COMENTADO QUE HAY QUE RESOLVER
     //returns all reservations as a list
     @Override
     public List<Reservation> findAll() throws PersistenceException {
@@ -127,7 +130,7 @@ public class ReservationRepository implements Repository<Reservation> {
         try (Statement st = con.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM reservation")) {
             while (rs.next()) {
-              //  list.add(createFromRow(rs));
+                list.add(createFromRow(rs));
             }
         } catch (SQLException e) {
             throw new DataAccessException("It wasn't possible to access the reservations");
