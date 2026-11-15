@@ -1,7 +1,5 @@
 package hotelmanagement.persistence;
 
-import hotelmanagement.enums.UserType;
-import hotelmanagement.enums.Permission;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;

@@ -3,7 +3,6 @@ package hotelmanagement.persistence;
 import hotelmanagement.generics.Registry;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
-import hotelmanagement.exceptions.EntityNotFoundException;
 import hotelmanagement.exceptions.PersistenceException;
 
 import java.sql.ResultSet;
