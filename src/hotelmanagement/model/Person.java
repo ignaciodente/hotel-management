@@ -2,7 +2,7 @@ package hotelmanagement.model;
 
 import java.util.Objects;
 
-public class Person {
+public abstract class Person {
 
     //Attributes
     private String firstName;
