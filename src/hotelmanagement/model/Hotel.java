@@ -8,6 +8,16 @@ import hotelmanagement.exceptions.*;
 import hotelmanagement.generics.Registry;
 import hotelmanagement.persistence.*;
 
+/*Porque Hotel necesita arrancar con una estructura preparada para administrar todo el sistema:
+- Nombre y precio base: identifican y configuran el hotel.
+- currentUser = null: el sistema arranca sin sesión iniciada.
+- Cinco Registry: permiten trabajar con los objetos cargados en memoria.
+- Tres repositorios recibidos: proporcionan acceso a habitaciones, huéspedes y usuarios en MySQL.
+- Dos repositorios construidos internamente: utilizan los registros para reconstruir reservas y estadías relacionadas con otros objetos.
+
+El constructor arma la estructura del hotel, loadData() recupera la información existente y los demás métodos permiten operar el hotel durante el día.
+Hotel coordina, Registry mantiene los objetos en memoria y Repository se encarga de la persistencia en MySQL.
+*/
 
 public class Hotel {
 
@@ -73,19 +83,22 @@ public class Hotel {
 
     /* currentUser representa el usuario que tiene la sesión iniciada, y queremos controlar cuándo cambia.
     Que login() y logout() sean los únicos métodos que modifiquen ese atributo. La idea es que otras clases
-    puedan consultar quién está conectado, pero no puedan cambiarlo arbitrariamente.*/
+    puedan consultar quién está conectado, pero no puedan cambiarlo arbitrariamente. Por eso solo get, no set*/
 
-    ////>!!!!!!!!!!!!!!!!!!!!///
-    /*Importante: primero cargamos habitaciones, huéspedes y usuarios porque reservas y estadías necesitan esos objetos para reconstruir sus relaciones.*/
-    ///!!!!!!!!!!!!!!!!!!!!///
+    /*Importante: primero cargamos habitaciones, huéspedes y usuarios porque reservas y estadías necesitan esos objetos para reconstruir sus relaciones.
+    El constructor prepara las conexiones entre los componentes y loadData() recupera la información en el orden necesario.*/
+
 
     ///-------------------------------------------------------------------METODOS
 
+    /*El método loadData() se encarga de recuperar toda la información guardada en MySQL y cargarla en la memoria del programa.*/
+
     public void loadData() throws PersistenceException{
-        List<Room> roomList = roomRepository.findAll();
+
+        List<Room> roomList = roomRepository.findAll(); /*Le pide al repositorio que recupere todas las habitaciones guardadas en MySQL.*/
         for (Room room : roomList) {
             rooms.add(room);
-        }
+        } /*Recorre cada habitación recuperada y la incorpora al Registry<Room> del hotel.*/
 
         List<Guest> guestList = guestRepository.findAll();
         for (Guest guest : guestList) {
@@ -122,18 +135,10 @@ public class Hotel {
         stayRepository.exportToCsv(folder);
     }
 
-    /*Para que funcione checkPermission, se debe implementar en User estos métodos:
-        public boolean isActive() {
-            return active;
-        }
-        public Set<Permission> getPermissions() {
-            return permissions;
-        }*/
-
     ///METODOS USERS >> login / logout / createUser/ deactivateUser / revokePermission / grantPermission
     ///
     ///login
-    public void login(String username, String password) throws InvalidCredentialsException, UserException {
+    public void login(String username, String password) throws InvalidCredentialsException {
         for (User user : users.list()) {
             if (user.authenticate(username, password) && user.isActive()) {
                 currentUser = user;
@@ -149,12 +154,12 @@ public class Hotel {
     }
 
     ///createUser
-    public void createUser(User u) throws AccessDeniedException, UserException, PersistenceException {
+    public void createUser(User u) throws AccessDeniedException, PersistenceException {
 
         checkPermission(Permission.MANAGE_USERS);
 
         if (u == null) {
-            throw new UserException("El usuario no puede ser null");
+            throw new IllegalArgumentException("El usuario no puede ser null");
         }
 
         userRepository.insert(u);
@@ -248,7 +253,6 @@ public class Hotel {
         guests.add(g);
     }
 
-
     /// findGuestByDni
     public Guest findGuestByDni(String dni)
             throws EntityNotFoundException {
@@ -267,7 +271,7 @@ public class Hotel {
     }
 
     /// isAvailable
-    /*ahora verifica que la habitación esté disponible y que no tenga reservas superpuestas en estado ACTIVE o IN_PROGRESS.
+    /* Verifica que la habitación esté disponible y que no tenga reservas superpuestas en estado ACTIVE o IN_PROGRESS.
     Las reservas COMPLETED y CANCELLED no bloquean nuevas reservas.*/
     public boolean isAvailable(Room r, LocalDate from, LocalDate to) {
 
@@ -413,7 +417,7 @@ public class Hotel {
     }
 
     ///changeRoomStatus
-    /*¿Qué mejoramos?
+    /*¿Qué hace?
     - Verifica el permiso MANAGE_ROOMS.
     - Comprueba que la habitación exista.
     - Exige un motivo para CLEANING, DISINFECTION, REPAIR y CLOSED.
@@ -432,8 +436,7 @@ public class Hotel {
             throw new IllegalArgumentException("El estado no puede ser null");
         }
 
-        if (status != RoomStatus.AVAILABLE
-                && (reason == null || reason.isBlank())) {
+        if (status != RoomStatus.AVAILABLE && (reason == null || reason.isBlank())) {
             throw new IllegalArgumentException(
                     "Debe indicar un motivo para cambiar el estado"
             );
