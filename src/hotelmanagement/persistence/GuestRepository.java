@@ -36,10 +36,9 @@ public class GuestRepository implements Repository<Guest> {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("dni"),
-                rs.getInt("guest_id"),
                 rs.getString("country"),
                 rs.getString("home_address"));
-        guest.setIdGuest(rs.getInt("guest_id"));
+        guest.setId(rs.getInt("guest_id"));
         return guest;
     }
 
@@ -57,7 +56,7 @@ public class GuestRepository implements Repository<Guest> {
             ps.setString(5, guest.getHomeAddress());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) guest.setIdGuest(keys.getInt(1));
+                if (keys.next()) guest.setId(keys.getInt(1));
             }
         } catch (SQLException e) {
             throw new DataAccessException("It wasn't possible to insert the guest " + guest.getDni());

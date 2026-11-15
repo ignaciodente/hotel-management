@@ -66,7 +66,6 @@ public class StayRepository implements Repository<Stay> {
 
             return new Stay(stayId, reservation, occupants,
                        rs.getTimestamp ("check_in_date").toLocalDateTime(), checkOut, totalAmount);
-            return null; //TEMPORARIO HASTA RESOLVER LO DE ARRIBA
         } catch (EntityNotFoundException e) {
             throw new DataAccessException("Unavailable reference when uploading the stay "
                     + rs.getInt("stay_id") + ": " + e.getMessage());

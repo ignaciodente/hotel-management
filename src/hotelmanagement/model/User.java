@@ -2,33 +2,31 @@ package hotelmanagement.model;
 
 import hotelmanagement.enums.Permission;
 import hotelmanagement.enums.UserType;
-import hotelmanagement.exceptions.UserException;
+import hotelmanagement.exceptions.PermissionException;
 import hotelmanagement.interfaces.Identifiable;
 
 import java.util.HashSet;
+import java.util.Set;
 
-public class User extends Person implements Identifiable {
+public abstract class User extends Person implements Identifiable {
 
     //attributes
 
     private int idUser;
-    private static int countUser=0;
     private String username;
     private String password;
     private boolean active;
-    private HashSet<Permission> permission;
+    private Set<Permission> permission;
     private UserType type;
 
 
     //Constructor model
 
-    public User(String name, String lastName, String dni, String username, String password, boolean active,UserType type) {
+    protected User(String name, String lastName, String dni, String username, String password,UserType type) {
         super(name, lastName, dni);
-        countUser++;
-        this.idUser = countUser;
         this.username = username;
         this.password = password;
-        this.active = active;
+        this.active=true;
         this.permission = new HashSet<>();
         this.type=type;
         defaultPermissions();
@@ -41,7 +39,7 @@ public class User extends Person implements Identifiable {
         return idUser;
     }
 
-    public void setIdUser(int idUser) {
+    public void setId(int idUser) {
         this.idUser = idUser;
     }
 
@@ -69,44 +67,47 @@ public class User extends Person implements Identifiable {
         this.active = active;
     }
 
-    public HashSet<Permission> getPermission() {
-        return permission;
+
+    public UserType getType() {
+        return type;
     }
 
-    public String getType() {
-        return type.name();
-    }
+    public boolean authenticate (String username, String password){
 
-    public boolean authenticate (String username, String password) throws UserException{
-      if(!this.active){
-          throw new UserException("User account is inactive");
-      }
-      if(username==null || password==null){
-          throw new UserException("Username and password cannot be null");
-      }
       return this.username.equals(username) && this.password.equals(password);
     }
 
     protected void defaultPermissions(){
         permission.addAll(type.getDefaultPermissions());
     };
-    protected boolean hasPermission(Permission p){
+    public boolean hasPermission(Permission p){
         return permission.contains(p);
     }
 
-    protected boolean setPermission(Permission p){
+    public boolean grantPermission(Permission p)throws PermissionException{
+
+        if (permission.contains(p)){
+            throw new PermissionException("The user already have this permission.");
+        }
         return permission.add(p);
     }
 
-    protected boolean removePermission(Permission p){
+    public boolean revokePermission(Permission p) throws PermissionException {
+        if (!permission.contains(p)){
+            throw new PermissionException("The user does not have this permission.");
+        }
         return permission.remove(p);
     }
 
 
+    public Set<Permission> getPermissions() {
+        return new HashSet<>(permission);
+    }
 
 
-
-
+    public void setPermissions(Set<Permission> p){
+        this.permission=new HashSet<>(p);
+    }
 
     @Override
     public String toString() {
