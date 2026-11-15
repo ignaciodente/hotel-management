@@ -121,7 +121,6 @@ public class ReservationRepository implements Repository<Reservation> {
         }
     }
 
-    //HAY UN COMENTADO QUE HAY QUE RESOLVER
     //returns all reservations as a list
     @Override
     public List<Reservation> findAll() throws PersistenceException {
@@ -131,7 +130,7 @@ public class ReservationRepository implements Repository<Reservation> {
         try (Statement st = con.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM reservation")) {
             while (rs.next()) {
-              //  list.add(createFromRow(rs));
+                list.add(createFromRow(rs));
             }
         } catch (SQLException e) {
             throw new DataAccessException("It wasn't possible to access the reservations");

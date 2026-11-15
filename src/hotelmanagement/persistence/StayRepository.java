@@ -182,7 +182,7 @@ public class StayRepository implements Repository<Stay> {
             ps.setInt(1, stayId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-              //      occupants.add(guests.findById(rs.getInt("guest_id")));
+                    occupants.add(guests.findById(rs.getInt("guest_id")));
                 }
             }
         }
