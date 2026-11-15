@@ -1,7 +1,6 @@
 package hotelmanagement.model;
 
 import hotelmanagement.enums.ReservationStatus;
-import hotelmanagement.exceptions.InvalidReservationException;
 import hotelmanagement.interfaces.Identifiable;
 
 import java.time.LocalDate;

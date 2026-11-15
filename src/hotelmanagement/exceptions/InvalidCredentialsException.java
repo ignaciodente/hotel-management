@@ -1,9 +1,9 @@
 package hotelmanagement.exceptions;
 
 
-public class InvalidCredentialsException extends RuntimeException {
+public class InvalidCredentialsException extends Exception {
     public InvalidCredentialsException() {
-        super("InvalidCredential");
+        super("Invalid Credential");
     }
 }
 
