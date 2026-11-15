@@ -1,6 +1,6 @@
 package hotelmanagement.enums;
 
-import java.util.List;
+
 import java.util.Set;
 
 public enum UserType {

@@ -1,6 +1,8 @@
 package hotelmanagement.model;
 
+import hotelmanagement.enums.Permission;
 import hotelmanagement.enums.UserType;
+import hotelmanagement.exceptions.PermissionException;
 
 public class Administrator extends User{
 //Attributes
@@ -14,7 +16,9 @@ public class Administrator extends User{
 
     //Methods
 
-
+    public boolean revokePermission(Permission p)throws PermissionException{
+        throw new PermissionException("Permissions cannot be revoked from an administrator");
+    }
 
 
 
