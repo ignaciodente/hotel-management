@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import hotelmanagement.enums.*;
 import hotelmanagement.exceptions.*;
+import hotelmanagement.generics.Registry;
+import hotelmanagement.persistence.*;
 
 
 public class Hotel {
