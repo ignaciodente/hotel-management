@@ -1,4 +1,4 @@
-package hotelmanagement.model;
+package hotelmanagement.generics;
 
 import hotelmanagement.interfaces.Identifiable;
 
