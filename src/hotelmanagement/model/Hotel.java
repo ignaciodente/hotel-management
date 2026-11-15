@@ -197,7 +197,7 @@ public class Hotel {
         if (p == null
                 || currentUser == null
                 || !currentUser.isActive()
-                || !currentUser.getPermission().contains(p)) {
+                || !currentUser.hasPermission(p)) {
 
             throw new AccessDeniedException("Acceso denegado: el usuario no tiene permisos para realizar esta operación");
         }
@@ -219,7 +219,7 @@ public class Hotel {
 
         User user = users.findById(userId);
 
-        user.getPermission().add(p);
+        user.grantPermission(p);
         userRepository.update(user);
     }
 
@@ -236,7 +236,7 @@ public class Hotel {
 
         User user = users.findById(userId);
 
-        user.getPermission().remove(p);
+        user.revokePermission(p);
         userRepository.update(user);
     }
 
@@ -301,12 +301,29 @@ public class Hotel {
     /*comprueba permisos, valida los datos, verifica disponibilidad, crea la reserva y la guarda en MySQL y en el registro.*/
 
     public Reservation createReservation(Guest g, Room r, LocalDate from, LocalDate to, int numberOfGuests)
-            throws AccessDeniedException, InvalidReservationException, RoomNotAvailableException, CapacityExceededException, PersistenceException {
+            throws AccessDeniedException, InvalidReservationException,
+            RoomNotAvailableException, CapacityExceededException, PersistenceException {
 
         checkPermission(Permission.MANAGE_RESERVATIONS);
 
-        if (g == null || r == null || from == null || to == null || !from.isBefore(to) || numberOfGuests <= 0) {
-            throw new InvalidReservationException("La reserva no puede realizarse");
+        if (g == null) {
+            throw new InvalidReservationException("El huésped no puede ser null");
+        }
+
+        if (r == null) {
+            throw new InvalidReservationException("La habitación no puede ser null");
+        }
+
+        if (from == null || to == null) {
+            throw new InvalidReservationException("Las fechas de la reserva no pueden ser null");
+        }
+
+        if (!from.isBefore(to)) {
+            throw new InvalidReservationException("La fecha de inicio debe ser anterior a la fecha de finalización");
+        }
+
+        if (numberOfGuests <= 0) {
+            throw new InvalidReservationException("La cantidad de huéspedes debe ser mayor a cero");
         }
 
         if (numberOfGuests > r.getCapacity()) {
@@ -314,7 +331,7 @@ public class Hotel {
         }
 
         if (!isAvailable(r, from, to)) {
-            throw new RoomNotAvailableException( "La habitación no está disponible para las fechas solicitadas");
+            throw new RoomNotAvailableException("La habitación no está disponible para las fechas solicitadas");
         }
 
         Reservation reservation = new Reservation(
