@@ -1,4 +1,4 @@
 package hotelmanagement.model;
 
-public class Permission {
+public class Registry {
 }
