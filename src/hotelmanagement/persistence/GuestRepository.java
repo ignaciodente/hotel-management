@@ -3,6 +3,7 @@ package hotelmanagement.persistence;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;
+import hotelmanagement.model.Guest;
 
 import java.sql.ResultSet;
 import java.util.List;

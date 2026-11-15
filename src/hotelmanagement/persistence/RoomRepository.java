@@ -1,7 +1,10 @@
 package hotelmanagement.persistence;
+import hotelmanagement.enums.RoomLevel;
+import hotelmanagement.enums.RoomStatus;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;
+import hotelmanagement.model.Room;
 
 import java.sql.ResultSet;
 import java.util.List;
