@@ -6,6 +6,7 @@ import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;
 import hotelmanagement.model.Guest;
+import hotelmanagement.model.Reservation;
 import hotelmanagement.model.Stay;
 
 import java.sql.ResultSet;
@@ -17,10 +18,10 @@ import java.util.ArrayList;
 
 public class StayRepository implements Repository<Stay> {
 
-    private final Registry reservations;
-    private final Registry guests;
+    private final Registry<Reservation> reservations;
+    private final Registry<Guest> guests;
 
-    public StayRepository(Registry r, Registry g) {
+    public StayRepository(Registry<Reservation> r, Registry<Guest> g) {
         this.reservations = r;
         this.guests = g;
     }
@@ -52,11 +53,10 @@ public class StayRepository implements Repository<Stay> {
     }
 
     //makes a row into an object
-    //TIENE DOS COMENTADOS QUE RESOLVER
     private Stay createFromRow(ResultSet rs) throws SQLException, PersistenceException {
         try {
             int stayId = rs.getInt("stay_id");
-       //     Reservation reservation = reservations.findById(rs.getInt("reservation_id"));
+            Reservation reservation = reservations.findById(rs.getInt("reservation_id"));
             List<Guest> occupants = loadOccupants(stayId);
 
             Timestamp out = rs.getTimestamp("check_out_date");
@@ -64,8 +64,8 @@ public class StayRepository implements Repository<Stay> {
             double total = rs.getDouble("total_amount");
             Double totalAmount = rs.wasNull() ? null : total;
 
-            //return new Stay(stayId, reservation, occupants
-            //           rs.getTimestamp ("check_in_date").toLocalDateTime(), checkOut, totalAmount);
+            return new Stay(stayId, reservation, occupants,
+                       rs.getTimestamp ("check_in_date").toLocalDateTime(), checkOut, totalAmount);
             return null; //TEMPORARIO HASTA RESOLVER LO DE ARRIBA
         } catch (EntityNotFoundException e) {
             throw new DataAccessException("Unavailable reference when uploading the stay "

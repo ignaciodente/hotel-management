@@ -1,4 +1,4 @@
 package hotelmanagement.generics;
 
-public class Registry {
+public class Registry<T> {
 }
