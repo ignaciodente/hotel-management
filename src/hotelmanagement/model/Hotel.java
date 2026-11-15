@@ -138,7 +138,7 @@ public class Hotel {
                 return;
             }
         }
-        throw new InvalidCredentialsException();
+        throw new InvalidCredentialsException("Usuario o contraseña incorrectos, o cuenta desactivada");
     }
 
     /// logout
@@ -196,7 +196,7 @@ public class Hotel {
                 || !currentUser.isActive()
                 || !currentUser.getPermissions().contains(p)) {
 
-            throw new AccessDeniedException();
+            throw new AccessDeniedException("Acceso denegado: el usuario no tiene permisos para realizar esta operación");
         }
     }
 
@@ -306,25 +306,21 @@ public class Hotel {
     /// createReservation
     /*comprueba permisos, valida los datos, verifica disponibilidad, crea la reserva y la guarda en MySQL y en el registro.*/
 
-    public Reservation createReservation(Guest g, Room r,
-                                         LocalDate from, LocalDate to,
-                                         int numberOfGuests)
-            throws AccessDeniedException, InvalidReservationException,
-            RoomNotAvailableException, CapacityExceededException {
+    public Reservation createReservation(Guest g, Room r, LocalDate from, LocalDate to, int numberOfGuests)
+            throws AccessDeniedException, InvalidReservationException, RoomNotAvailableException, CapacityExceededException {
 
         checkPermission(Permission.MANAGE_RESERVATIONS);
 
-        if (g == null || r == null || from == null || to == null
-                || !from.isBefore(to) || numberOfGuests <= 0) {
-            throw new InvalidReservationException();
+        if (g == null || r == null || from == null || to == null || !from.isBefore(to) || numberOfGuests <= 0) {
+            throw new InvalidReservationException("La reserva no puede realizarse");
         }
 
         if (numberOfGuests > r.getCapacity()) {
-            throw new CapacityExceededException();
+            throw new CapacityExceededException("La cantidad de huéspedes supera la capacidad máxima de la habitación");
         }
 
         if (!isAvailable(r, from, to)) {
-            throw new RoomNotAvailableException();
+            throw new RoomNotAvailableException( "La habitación no está disponible para las fechas solicitadas");
         }
 
         Reservation reservation = new Reservation(
@@ -365,20 +361,20 @@ public class Hotel {
         }
 
         if (reservation.getStatus() != ReservationStatus.ACTIVE) {
-            throw new InvalidReservationException();
+            throw new InvalidReservationException( "No se puede realizar el check-in porque la reserva no está activa");
         }
 
         if (occupants == null || occupants.isEmpty()) {
-            throw new InvalidReservationException();
+            throw new InvalidReservationException("No se puede realizar el check-in porque no se especificaron huéspedes");
         }
 
         if (occupants.size() > reservation.getNumberOfGuests() || occupants.size() > reservation.getRoom().getCapacity()) {
-            throw new CapacityExceededException();
+            throw new CapacityExceededException("La cantidad de ocupantes supera el número de huéspedes reservados o la capacidad máxima de la habitación");
         }
 
         for (Stay existingStay : stays.list()) {
             if (existingStay.isActive() && existingStay.getReservation().getId() == reservationId) {
-                throw new InvalidReservationException();
+                throw new InvalidReservationException( "No se puede realizar el check-in porque la reserva ya tiene una estadía activa");
             }
         }
 
@@ -409,7 +405,7 @@ public class Hotel {
         }
 
         if (!stay.isActive()) {
-            throw new InvalidReservationException();
+            throw new InvalidReservationException("No se puede realizar el check-out porque la estadía ya está cerrada");
         }
 
         stay.close(LocalDateTime.now(), basePrice);
@@ -471,19 +467,17 @@ public class Hotel {
             throws InvalidReservationException {
 
         if (from == null || to == null || !from.isBefore(to)) {
-            throw new InvalidReservationException();
+            throw new InvalidReservationException("Las fechas ingresadas son inválidas. La fecha de inicio debe ser anterior a la fecha de fin");
         }
 
         if (numberOfGuests <= 0) {
-            throw new InvalidReservationException();
+            throw new InvalidReservationException("La cantidad de huéspedes debe ser mayor a cero");
         }
 
         List<Room> availableRooms = new ArrayList<>();
 
         for (Room room : rooms.list()) {
-            if (room.getCapacity() >= numberOfGuests
-                    && isAvailable(room, from, to)) {
-
+            if (room.getCapacity() >= numberOfGuests && isAvailable(room, from, to)) {
                 availableRooms.add(room);
             }
         }
@@ -558,8 +552,7 @@ public class Hotel {
 
     /// getGuestReport
     /*genera un reporte con los datos del huésped, sus estadías, habitaciones, fechas e importes.*/
-    public String getGuestReport(int guestId)
-            throws EntityNotFoundException {
+    public String getGuestReport(int guestId) throws EntityNotFoundException {
 
         Guest guest = guests.findById(guestId);
 

@@ -1,7 +1,7 @@
 package hotelmanagement.exceptions;
 
 public class InvalidReservationException extends Exception {
-    public InvalidReservationException() {
-        super("Invalid Reservation");
+    public InvalidReservationException(String message) {
+        super(message);
     }
 }
