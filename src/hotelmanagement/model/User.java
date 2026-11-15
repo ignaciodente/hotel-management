@@ -26,6 +26,7 @@ public abstract class User extends Person implements Identifiable {
         super(name, lastName, dni);
         this.username = username;
         this.password = password;
+        this.active=true;
         this.permission = new HashSet<>();
         this.type=type;
         defaultPermissions();
@@ -83,7 +84,11 @@ public abstract class User extends Person implements Identifiable {
         return permission.contains(p);
     }
 
-    public boolean grantPermission(Permission p){
+    public boolean grantPermission(Permission p)throws PermissionException{
+
+        if (permission.contains(p)){
+            throw new PermissionException("The user already have this permission.");
+        }
         return permission.add(p);
     }
 
@@ -95,13 +100,13 @@ public abstract class User extends Person implements Identifiable {
     }
 
 
-    public Set<Permission> getPermission() {
-        return permission;
+    public Set<Permission> getPermissions() {
+        return new HashSet<>(permission);
     }
 
 
     public void setPermissions(Set<Permission> p){
-        this.permission=p;
+        this.permission=new HashSet<>(p);
     }
 
     @Override
