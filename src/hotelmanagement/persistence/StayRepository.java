@@ -2,9 +2,6 @@ package hotelmanagement.persistence;
 
 import hotelmanagement.generics.Registry;
 import hotelmanagement.interfaces.Repository;
-import hotelmanagement.model.Stay;
-import hotelmanagement.model.Guest;
-import hotelmanagement.model.Reservation;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.EntityNotFoundException;
 import hotelmanagement.exceptions.PersistenceException;

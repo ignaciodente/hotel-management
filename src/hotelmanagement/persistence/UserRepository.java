@@ -2,12 +2,9 @@ package hotelmanagement.persistence;
 
 import hotelmanagement.enums.UserType;
 import hotelmanagement.enums.Permission;
-import hotelmanagement.model.User;
 import hotelmanagement.interfaces.Repository;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;
-import hotelmanagement.model.Administrator;
-import hotelmanagement.model.Receptionist;
 
 import java.sql.ResultSet;
 import java.util.*;

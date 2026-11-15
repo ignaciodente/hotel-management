@@ -1,7 +1,6 @@
 package hotelmanagement.persistence;
 
 import hotelmanagement.interfaces.Repository;
-import hotelmanagement.model.Guest;
 import hotelmanagement.exceptions.DataAccessException;
 import hotelmanagement.exceptions.PersistenceException;
 
