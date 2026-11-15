@@ -1,5 +1,5 @@
 package hotelmanagement.generics;
-
+import hotelmanagement.exceptions.EntityNotFoundException;
 import hotelmanagement.interfaces.Identifiable;
 
 import java.util.HashMap;
@@ -21,8 +21,15 @@ public class Registry<T extends Identifiable> {
         } return false;
     }
 
-    public T findById(int id) {
-        return elements.get(id);
+    public T findById(int id) throws EntityNotFoundException {
+
+        T element = elements.get(id);
+
+        if (element == null) {
+            throw new EntityNotFoundException("No se encontró ninguna entidad con ID: " + id);
+        }
+
+        return element;
     }
 
     public boolean contains(int id) {

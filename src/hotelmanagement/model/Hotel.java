@@ -81,7 +81,7 @@ public class Hotel {
 
     ///-------------------------------------------------------------------METODOS
 
-    public void loadData(){
+    public void loadData() throws PersistenceException{
         List<Room> roomList = roomRepository.findAll();
         for (Room room : roomList) {
             rooms.add(room);
@@ -111,7 +111,7 @@ public class Hotel {
     }
 
     ////// METODOS backups
-    public void performBackup(String folder) throws AccessDeniedException {
+    public void performBackup(String folder) throws AccessDeniedException, PersistenceException {
 
         checkPermission(Permission.PERFORM_BACKUP);
 
@@ -133,9 +133,9 @@ public class Hotel {
     ///METODOS USERS >> login / logout / createUser/ deactivateUser / revokePermission / grantPermission
     ///
     ///login
-    public void login(String username, String password) throws InvalidCredentialsException {
+    public void login(String username, String password) throws InvalidCredentialsException, UserException {
         for (User user : users.list()) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password) && user.isActive()) {
+            if (user.authenticate(username, password) && user.isActive()) {
                 currentUser = user;
                 return;
             }
@@ -149,7 +149,7 @@ public class Hotel {
     }
 
     ///createUser
-    public void createUser(User u) throws AccessDeniedException, UserException {
+    public void createUser(User u) throws AccessDeniedException, UserException, PersistenceException {
 
         checkPermission(Permission.MANAGE_USERS);
 
@@ -163,15 +163,11 @@ public class Hotel {
 
     /// deactivateUser
     /*este código supone que User tiene el metodo setActive(boolean) y que EntityNotFoundExceptio tiene un constructor sin argumentos.*/
-    public void deactivateUser(int userId) throws AccessDeniedException, EntityNotFoundException {
+    public void deactivateUser(int userId) throws AccessDeniedException, EntityNotFoundException, PersistenceException{
 
         checkPermission(Permission.MANAGE_USERS);
 
         User user = users.findById(userId);
-
-        if (user == null) {
-            throw new EntityNotFoundException("Usuario no encontrado");
-        }
 
         user.setActive(false);
         userRepository.update(user);
@@ -196,7 +192,7 @@ public class Hotel {
         if (p == null
                 || currentUser == null
                 || !currentUser.isActive()
-                || !currentUser.getPermissions().contains(p)) {
+                || !currentUser.getPermission().contains(p)) {
 
             throw new AccessDeniedException("Acceso denegado: el usuario no tiene permisos para realizar esta operación");
         }
@@ -208,7 +204,7 @@ public class Hotel {
     en MySQL. Esto último hay que verificarlo con tu compañero.*/
     public void grantPermission(int userId, Permission p)
             throws AccessDeniedException, EntityNotFoundException,
-            PermissionException {
+            PermissionException, PersistenceException {
 
         checkPermission(Permission.MANAGE_USERS);
 
@@ -218,18 +214,14 @@ public class Hotel {
 
         User user = users.findById(userId);
 
-        if (user == null) {
-            throw new EntityNotFoundException("Usuario no encontrado");
-        }
-
-        user.getPermissions().add(p);
+        user.getPermission().add(p);
         userRepository.update(user);
     }
 
     ///revokePermission
     public void revokePermission(int userId, Permission p)
             throws AccessDeniedException, EntityNotFoundException,
-            PermissionException {
+            PermissionException, PersistenceException {
 
         checkPermission(Permission.MANAGE_USERS);
 
@@ -239,18 +231,14 @@ public class Hotel {
 
         User user = users.findById(userId);
 
-        if (user == null) {
-            throw new EntityNotFoundException("Usuario no encontrado");
-        }
-
-        user.getPermissions().remove(p);
+        user.getPermission().remove(p);
         userRepository.update(user);
     }
 
     ///METODOS HUESPEDES >>> registerGuest / findGuestByDni / isAvailable
     ///
     /// registerGuest
-    public void registerGuest(Guest g) throws IllegalArgumentException {
+    public void registerGuest(Guest g) throws IllegalArgumentException, PersistenceException {
 
         if (g == null) {
             throw new IllegalArgumentException("El huésped no puede ser null");
@@ -309,7 +297,7 @@ public class Hotel {
     /*comprueba permisos, valida los datos, verifica disponibilidad, crea la reserva y la guarda en MySQL y en el registro.*/
 
     public Reservation createReservation(Guest g, Room r, LocalDate from, LocalDate to, int numberOfGuests)
-            throws AccessDeniedException, InvalidReservationException, RoomNotAvailableException, CapacityExceededException {
+            throws AccessDeniedException, InvalidReservationException, RoomNotAvailableException, CapacityExceededException, PersistenceException {
 
         checkPermission(Permission.MANAGE_RESERVATIONS);
 
@@ -336,15 +324,11 @@ public class Hotel {
     }
 
     /// cancelReservation
-    public void cancelReservation(int reservationId) throws AccessDeniedException, EntityNotFoundException, InvalidReservationException {
+    public void cancelReservation(int reservationId) throws AccessDeniedException, EntityNotFoundException, InvalidReservationException, PersistenceException {
 
         checkPermission(Permission.MANAGE_RESERVATIONS);
 
         Reservation reservation = reservations.findById(reservationId);
-
-        if (reservation == null) {
-            throw new EntityNotFoundException("Reserva no encontrada");
-        }
 
         reservation.cancel();
         reservationRepository.update(reservation);
@@ -352,31 +336,40 @@ public class Hotel {
 
     /// checkIn
     /*valida permisos, reserva, ocupantes y que no exista un check-in activo para esa reserva. Después crea y guarda la estadía.*/
-    public Stay checkIn(int reservationId, List<Guest> occupants) throws AccessDeniedException, EntityNotFoundException, InvalidReservationException, CapacityExceededException {
+    public Stay checkIn(int reservationId, List<Guest> occupants)
+            throws AccessDeniedException, EntityNotFoundException,
+            InvalidReservationException, CapacityExceededException, PersistenceException {
 
         checkPermission(Permission.DO_CHECK_IN_OUT);
 
         Reservation reservation = reservations.findById(reservationId);
 
-        if (reservation == null) {
-            throw new EntityNotFoundException("Reserva no encontrada");
-        }
-
         if (reservation.getStatus() != ReservationStatus.ACTIVE) {
-            throw new InvalidReservationException( "No se puede realizar el check-in porque la reserva no está activa");
+            throw new InvalidReservationException(
+                    "No se puede realizar el check-in porque la reserva no está activa");
         }
 
         if (occupants == null || occupants.isEmpty()) {
-            throw new InvalidReservationException("No se puede realizar el check-in porque no se especificaron huéspedes");
+            throw new InvalidReservationException(
+                    "No se puede realizar el check-in porque no se especificaron huéspedes");
         }
 
-        if (occupants.size() > reservation.getNumberOfGuests() || occupants.size() > reservation.getRoom().getCapacity()) {
-            throw new CapacityExceededException("La cantidad de ocupantes supera el número de huéspedes reservados o la capacidad máxima de la habitación");
+        if (!occupants.contains(reservation.getHolder())) {
+            throw new InvalidReservationException(
+                    "No se puede realizar el check-in porque el titular de la reserva debe estar entre los ocupantes");
+        }
+
+        if (occupants.size() > reservation.getNumberOfGuests()
+                || occupants.size() > reservation.getRoom().getCapacity()) {
+            throw new CapacityExceededException(
+                    "La cantidad de ocupantes supera el número de huéspedes reservados o la capacidad máxima de la habitación");
         }
 
         for (Stay existingStay : stays.list()) {
-            if (existingStay.isActive() && existingStay.getReservation().getId() == reservationId) {
-                throw new InvalidReservationException( "No se puede realizar el check-in porque la reserva ya tiene una estadía activa");
+            if (existingStay.isActive()
+                    && existingStay.getReservation().getId() == reservationId) {
+                throw new InvalidReservationException(
+                        "No se puede realizar el check-in porque la reserva ya tiene una estadía activa");
             }
         }
 
@@ -396,18 +389,15 @@ public class Hotel {
     si la estadía ya está cerrada, lanza InvalidReservationException. Si está activa, realiza el check-out, calcula el importe y actualiza la reserva.*/
     public void checkOut(int stayId)
             throws AccessDeniedException, EntityNotFoundException,
-            InvalidReservationException {
+            InvalidReservationException, PersistenceException {
 
         checkPermission(Permission.DO_CHECK_IN_OUT);
 
         Stay stay = stays.findById(stayId);
 
-        if (stay == null) {
-            throw new EntityNotFoundException("Estadía no encontrada");
-        }
-
         if (!stay.isActive()) {
-            throw new InvalidReservationException("No se puede realizar el check-out porque la estadía ya está cerrada");
+            throw new InvalidReservationException(
+                    "No se puede realizar el check-out porque la estadía ya está cerrada");
         }
 
         stay.close(LocalDateTime.now(), basePrice);
@@ -416,6 +406,10 @@ public class Hotel {
         Reservation reservation = stay.getReservation();
         reservation.setStatus(ReservationStatus.COMPLETED);
         reservationRepository.update(reservation);
+
+        Room room = reservation.getRoom();
+        room.changeStatus(RoomStatus.CLEANING, "Pendiente de limpieza después del check-out");
+        roomRepository.update(room);
     }
 
     ///changeRoomStatus
@@ -428,15 +422,11 @@ public class Hotel {
     - Guarda el cambio en MySQL.*/
     public void changeRoomStatus(int roomId, RoomStatus status, String reason)
             throws AccessDeniedException, EntityNotFoundException,
-            IllegalArgumentException, IllegalStateException {
+            IllegalArgumentException, IllegalStateException, PersistenceException {
 
         checkPermission(Permission.MANAGE_ROOMS);
 
         Room room = rooms.findById(roomId);
-
-        if (room == null) {
-            throw new EntityNotFoundException("Habitación no encontrada");
-        }
 
         if (status == null) {
             throw new IllegalArgumentException("El estado no puede ser null");
@@ -499,10 +489,8 @@ public class Hotel {
                 occupiedRooms.add(stay);
             }
         }
-
         return occupiedRooms;
     }
-
 
     ///listUnavailableRooms
     /*devuelve las habitaciones en limpieza, desinfección, reparación o cerradas.
@@ -548,7 +536,6 @@ public class Hotel {
                 }
             }
         }
-
         return history;
     }
 
@@ -558,15 +545,12 @@ public class Hotel {
 
         Guest guest = guests.findById(guestId);
 
-        if (guest == null) {
-            throw new EntityNotFoundException("Huésped no encontrado");
-        }
-
         List<Stay> history = getGuestHistory(guest);
 
         StringBuilder report = new StringBuilder();
 
         report.append("REPORTE DEL HUÉSPED\n");
+        report.append("Nombre: ").append(guest.getFullName()).append("\n");
         report.append("DNI: ").append(guest.getDni()).append("\n");
         report.append("País: ").append(guest.getCountry()).append("\n");
         report.append("Domicilio: ").append(guest.getHomeAddress()).append("\n");
@@ -577,17 +561,12 @@ public class Hotel {
             report.append("\nHabitación: ").append(stay.getRoom().getNumber());
             report.append("\nCheck-in: ").append(stay.getCheckInDate());
             report.append("\nCheck-out: ").append(
-                    stay.isActive() ? "En curso" : stay.getCheckOutDate()
-            );
+                    stay.isActive() ? "En curso" : stay.getCheckOutDate());
             report.append("\nImporte: ").append(
-                    stay.isActive() ? "Pendiente" : stay.getTotalAmount()
-            );
+                    stay.isActive() ? "Pendiente" : stay.getTotalAmount());
             report.append("\n");
         }
 
         return report.toString();
     }
 }
-
-
-
