@@ -298,10 +298,8 @@ public class Hotel {
                 return false;
             }
         }
-
         return true;
     }
-
 
     ///METODOS RESERVACIONES >>> createReservation / cancelReservation / checkIn / checkOut / changeRoomStatus
     ///
@@ -462,7 +460,6 @@ public class Hotel {
                 }
             }
         }
-
         room.changeStatus(status, reason);
         roomRepository.update(room);
     }
