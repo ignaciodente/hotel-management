@@ -22,11 +22,10 @@ public abstract class User extends Person implements Identifiable {
 
     //Constructor model
 
-    public User(String name, String lastName, String dni, String username, String password, boolean active,UserType type) {
+    protected User(String name, String lastName, String dni, String username, String password,UserType type) {
         super(name, lastName, dni);
         this.username = username;
         this.password = password;
-        this.active = active;
         this.permission = new HashSet<>();
         this.type=type;
         defaultPermissions();
@@ -68,8 +67,8 @@ public abstract class User extends Person implements Identifiable {
     }
 
 
-    public String getType() {
-        return type.name();
+    public UserType getType() {
+        return type;
     }
 
     public boolean authenticate (String username, String password){

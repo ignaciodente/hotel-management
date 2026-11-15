@@ -9,7 +9,7 @@ public class Receptionist extends User{
     //Constructor Model
 
     public Receptionist(String name, String lastName, String dni, String username, String password) {
-        super(name, lastName, dni, username, password, true, UserType.RECEPTIONIST);
+        super(name, lastName, dni, username, password, UserType.RECEPTIONIST);
 
     }
 
