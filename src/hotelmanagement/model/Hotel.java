@@ -396,8 +396,11 @@ public class Hotel {
     }
 
     /// checkOut
-    /*busca la estadía, calcula el importe final mediante close() y guarda el check-out en MySQL*/
-    public void checkOut(int stayId) throws AccessDeniedException, EntityNotFoundException, IllegalStateException {
+    /*busca la estadía, calcula el importe final mediante close() y guarda el check-out en MySQL
+    si la estadía ya está cerrada, lanza InvalidReservationException. Si está activa, realiza el check-out, calcula el importe y actualiza la reserva.*/
+    public void checkOut(int stayId)
+            throws AccessDeniedException, EntityNotFoundException,
+            InvalidReservationException {
 
         checkPermission(Permission.DO_CHECK_IN_OUT);
 
@@ -408,7 +411,7 @@ public class Hotel {
         }
 
         if (!stay.isActive()) {
-            throw new IllegalStateException("La estadía ya fue cerrada");
+            throw new InvalidReservationException();
         }
 
         stay.close(LocalDateTime.now(), basePrice);
@@ -525,7 +528,10 @@ public class Hotel {
     }
 
     /// getGuestHistory
-    /*devuelve todas las estadías en las que participó el huésped, tanto activas como finalizadas. No duplica estadías.*/
+    /*devuelve todas las estadías en las que participó el huésped, tanto activas como finalizadas. No duplica estadías.
+    * El huésped es titular de la reserva.
+    El huésped figura como ocupante.
+    El huésped es titular y ocupante: la estadía se agrega una sola vez gracias al continue.*/
     public List<Stay> getGuestHistory(Guest g) {
 
         List<Stay> history = new ArrayList<>();
@@ -535,6 +541,12 @@ public class Hotel {
         }
 
         for (Stay stay : stays.list()) {
+
+            if (stay.getReservation().getHolder().getId() == g.getId()) {
+                history.add(stay);
+                continue;
+            }
+
             for (Guest occupant : stay.getOccupants()) {
 
                 if (occupant.getId() == g.getId()) {
@@ -583,8 +595,6 @@ public class Hotel {
 
         return report.toString();
     }
-
-
 }
 
 
