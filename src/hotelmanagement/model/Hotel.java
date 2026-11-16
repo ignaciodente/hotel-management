@@ -167,7 +167,6 @@ public class Hotel {
     }
 
     /// deactivateUser
-    /*este código supone que User tiene el metodo setActive(boolean) y que EntityNotFoundExceptio tiene un constructor sin argumentos.*/
     public void deactivateUser(int userId) throws AccessDeniedException, EntityNotFoundException, PersistenceException{
 
         checkPermission(Permission.MANAGE_USERS);
@@ -185,13 +184,6 @@ public class Hotel {
     /// METODOS PERMISOS
     ///
     /// checkPermission
-    /*Para que funcione checkPermission, se debe implementar en User estos métodos:
-    public boolean isActive() {
-        return active;
-    }
-    public Set<Permission> getPermissions() {
-        return permissions;
-    }*/
     private void checkPermission(Permission p) throws AccessDeniedException {
 
         if (p == null
@@ -204,9 +196,6 @@ public class Hotel {
     }
 
     ///grantPermission
-    /*Importante: ambos métodos suponen que getPermissions() devuelve un Set<Permission>
-    modificable y que userRepository.update(user) también guarda los cambios de permisos
-    en MySQL. Esto último hay que verificarlo con tu compañero.*/
     public void grantPermission(int userId, Permission p)
             throws AccessDeniedException, EntityNotFoundException,
             PermissionException, PersistenceException {
