@@ -16,8 +16,9 @@ public class Administrator extends User{
 
     //Methods
 
+    @Override
     public boolean revokePermission(Permission p)throws PermissionException{
-        throw new PermissionException("Permissions cannot be revoked from an administrator");
+        throw new PermissionException("No se le pueden quitar permisos a un administrador.");
     }
 
 

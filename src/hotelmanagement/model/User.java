@@ -87,14 +87,14 @@ public abstract class User extends Person implements Identifiable {
     public boolean grantPermission(Permission p)throws PermissionException{
 
         if (permission.contains(p)){
-            throw new PermissionException("The user already have this permission.");
+            throw new PermissionException("El usuario ya tiene este permiso.");
         }
         return permission.add(p);
     }
 
     public boolean revokePermission(Permission p) throws PermissionException {
         if (!permission.contains(p)){
-            throw new PermissionException("The user does not have this permission.");
+            throw new PermissionException("El usuario no tiene este permiso.");
         }
         return permission.remove(p);
     }
