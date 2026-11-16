@@ -29,7 +29,7 @@ public class RoomRepository implements Repository<Room> {
                             + "unavailable_reason VARCHAR(255) NULL "
                             + ") ");
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to create the room table");
+            throw new DataAccessException("No se pudo crear la tabla de habitaciones");
         }
     }
 
@@ -64,7 +64,7 @@ public class RoomRepository implements Repository<Room> {
                 if (keys.next()) room.setId(keys.getInt(1));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasnt possible to insert the room " + room.getNumber());
+            throw new DataAccessException("No se pudo guardar la habitación " + room.getNumber());
         }
     }
 
@@ -85,7 +85,7 @@ public class RoomRepository implements Repository<Room> {
             ps.setInt(7, room.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to update room " + room.getNumber());
+            throw new DataAccessException("No se pudo actualizar la habitación " + room.getNumber());
         }
     }
 
@@ -101,7 +101,7 @@ public class RoomRepository implements Repository<Room> {
                 rooms.add(createFromRow(rs));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to access the rooms");
+            throw new DataAccessException("No se pudo acceder a las habitaciones");
         }
         return rooms;
     }

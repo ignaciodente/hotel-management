@@ -30,7 +30,7 @@ public class UserRepository implements Repository<User> {
                 ps.setString(3, user.getDni());
                 ps.setString(4, user.getUsername());
                 ps.setString(5, user.getPassword());
-                ps.setString(6, user.getType().toString());
+                ps.setString(6, user.getType().name());
                 ps.setBoolean(7, user.isActive());
                 ps.executeUpdate();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -45,7 +45,7 @@ public class UserRepository implements Repository<User> {
                 con.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to insert the user " + user.getUsername());
+            throw new DataAccessException("No se pudo guardar el usuario " + user.getUsername());
         }
     }
 
@@ -64,7 +64,7 @@ public class UserRepository implements Repository<User> {
                 ps.setString(3, user.getDni());
                 ps.setString(4, user.getUsername());
                 ps.setString(5, user.getPassword());
-                ps.setString(6, user.getType().toString());
+                ps.setString(6, user.getType().name());
                 ps.setBoolean(7, user.isActive());
                 ps.setInt(8, user.getId());
                 ps.executeUpdate();
@@ -77,7 +77,7 @@ public class UserRepository implements Repository<User> {
                 con.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to update the user " + user.getUsername());
+            throw new DataAccessException("No se pudo actualizar el usuario " + user.getUsername());
         }
     }
 
@@ -93,7 +93,7 @@ public class UserRepository implements Repository<User> {
                 users.add(createFromRow(rs));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to access the users");
+            throw new DataAccessException("No se pudo acceder a los usuarios");
         }
         return users;
     }
@@ -129,7 +129,7 @@ public class UserRepository implements Repository<User> {
                             + "FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE "
                             + ") ");
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to create the table users / user_permission");
+            throw new DataAccessException("No se pudieron crear las tablas de usuarios y permisos");
         }
     }
 
@@ -145,7 +145,7 @@ public class UserRepository implements Repository<User> {
         try {
             userType = UserType.valueOf(rs.getString("user_type"));
         } catch (IllegalArgumentException e) {
-            throw new DataAccessException("Unknown user type in the database: " + rs.getString("user_type"));
+            throw new DataAccessException("Tipo de usuario desconocido en la base de datos: " + rs.getString("user_type"));
         }
 
         User user;
@@ -154,7 +154,7 @@ public class UserRepository implements Repository<User> {
         } else if (userType == UserType.RECEPTIONIST) {
             user = new Receptionist(firstName, lastName, dni, username, password);
         } else {
-            throw new DataAccessException("Unknown user type in the database: " + userType);
+            throw new DataAccessException("Tipo de usuario desconocido en la base de datos: " + userType);
         }
 
         int id = rs.getInt("user_id");

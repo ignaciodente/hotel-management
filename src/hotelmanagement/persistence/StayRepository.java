@@ -48,7 +48,7 @@ public class StayRepository implements Repository<Stay> {
                             + "FOREIGN KEY (guest_id) REFERENCES guest(guest_id) "
                             + ") ");
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to create the stay table / stay_guest");
+            throw new DataAccessException("No se pudieron crear las tablas de estadías y ocupantes");
         }
     }
 
@@ -67,7 +67,7 @@ public class StayRepository implements Repository<Stay> {
             return new Stay(stayId, reservation, occupants,
                        rs.getTimestamp ("check_in_date").toLocalDateTime(), checkOut, totalAmount);
         } catch (EntityNotFoundException e) {
-            throw new DataAccessException("Unavailable reference when uploading the stay "
+            throw new DataAccessException("Referencia inválida al cargar la estadía "
                     + rs.getInt("stay_id") + ": " + e.getMessage());
         }
     }
@@ -99,7 +99,7 @@ public class StayRepository implements Repository<Stay> {
                 con.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to insert the stay");
+            throw new DataAccessException("No se pudo guardar la estadía");
         }
     }
 
@@ -126,7 +126,7 @@ public class StayRepository implements Repository<Stay> {
                 con.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to update the stay " + s.getId());
+            throw new DataAccessException("No se pudo actualizar la estadía " + s.getId());
         }
     }
 
@@ -142,7 +142,7 @@ public class StayRepository implements Repository<Stay> {
                 list.add(createFromRow(rs));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to read the stays");
+            throw new DataAccessException("No se pudo acceder a las estadías");
         }
         return list;
     }

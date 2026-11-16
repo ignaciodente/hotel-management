@@ -26,7 +26,7 @@ public class GuestRepository implements Repository<Guest> {
                             + "home_address VARCHAR(150) "
                             + ") ");
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to create the guest table");
+            throw new DataAccessException("No se pudo crear la tabla de huéspedes");
         }
     }
 
@@ -59,7 +59,7 @@ public class GuestRepository implements Repository<Guest> {
                 if (keys.next()) guest.setId(keys.getInt(1));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to insert the guest " + guest.getDni());
+            throw new DataAccessException("No se pudo guardar el huésped con DNI " + guest.getDni());
         }
     }
 
@@ -79,7 +79,7 @@ public class GuestRepository implements Repository<Guest> {
             ps.setInt(6, guest.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to update the passenger with DNI " + guest.getDni());
+            throw new DataAccessException("No se pudo actualizar el huésped con DNI " + guest.getDni());
         }
     }
 
@@ -95,7 +95,7 @@ public class GuestRepository implements Repository<Guest> {
                 guests.add(createFromRow(rs));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to access the guests");
+            throw new DataAccessException("No se pudo acceder a los huéspedes");
         }
         return guests;
     }

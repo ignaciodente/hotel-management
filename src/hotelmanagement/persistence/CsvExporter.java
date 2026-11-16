@@ -51,7 +51,7 @@ final class CsvExporter {
                 }
             }
         } catch (SQLException | IOException e) {
-            throw new CsvExportException("Could not export table " + table + " to " + file);
+            throw new CsvExportException("No se pudo exportar la tabla " + table + " a " + file);
         }
     }
 }

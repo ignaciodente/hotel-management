@@ -48,7 +48,7 @@ public class ReservationRepository implements Repository<Reservation> {
                             + "FOREIGN KEY (created_by) REFERENCES users(user_id) "
                             + ") ");
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to create the reservation table");
+            throw new DataAccessException("No se pudo crear la tabla de reservas");
         }
     }
 
@@ -69,7 +69,7 @@ public class ReservationRepository implements Repository<Reservation> {
             r.setStatus(ReservationStatus.valueOf(rs.getString("status")));
             return r;
         } catch (EntityNotFoundException e) {
-            throw new DataAccessException("Error in reference when uploading the reservation "
+            throw new DataAccessException("Referencia inválida al cargar la reserva "
                     + rs.getInt("reservation_id") + ": " + e.getMessage());
         }
     }
@@ -95,7 +95,7 @@ public class ReservationRepository implements Repository<Reservation> {
                 if (keys.next()) r.setId(keys.getInt(1));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to insert the reservation");
+            throw new DataAccessException("No se pudo guardar la reserva");
         }
     }
 
@@ -117,7 +117,7 @@ public class ReservationRepository implements Repository<Reservation> {
             ps.setInt(8, r.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("it wasn't possible to update the reserve " + r.getId());
+            throw new DataAccessException("No se pudo actualizar la reserva " + r.getId());
         }
     }
 
@@ -133,7 +133,7 @@ public class ReservationRepository implements Repository<Reservation> {
                 list.add(createFromRow(rs));
             }
         } catch (SQLException e) {
-            throw new DataAccessException("It wasn't possible to access the reservations");
+            throw new DataAccessException("No se pudo acceder a las reservas");
         }
         return list;
     }

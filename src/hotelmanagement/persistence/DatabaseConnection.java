@@ -34,7 +34,7 @@ public class DatabaseConnection {
                 connection = openConnection();
             }
         } catch (SQLException e) {
-            throw new FailedConnectionException("It wasn't possible to verify the connection status");
+            throw new FailedConnectionException("No se pudo verificar el estado de la conexión");
         }
         return connection;
     }
@@ -45,12 +45,12 @@ public class DatabaseConnection {
              Statement st = server.createStatement()) {
             st.executeUpdate("CREATE DATABASE IF NOT EXISTS hotel CHARACTER SET utf8mb4");
         } catch (SQLException e) {
-            throw new FailedConnectionException("It wasn't possible to connect to MySQL server nor create the hotel database");
+            throw new FailedConnectionException("No se pudo conectar al servidor MySQL ni crear la base de datos hotel");
         }
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            throw new FailedConnectionException("We couldn't connect to the database in " + URL);
+            throw new FailedConnectionException("No se pudo conectar a la base de datos en " + URL);
         }
     }
 }
