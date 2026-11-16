@@ -82,8 +82,8 @@ public class Reservation implements Identifiable {
 
     public void cancel() throws InvalidReservationException {
         if (status != ReservationStatus.ACTIVE) {
-            throw new InvalidReservationException("Reservation " + reservationId
-                    + " cannot be cancelled because it is " + status);
+            throw new InvalidReservationException("La reserva " + reservationId
+                    + " no se puede cancelar: solo se pueden cancelar reservas activas");
         }
         status = ReservationStatus.CANCELLED;
     }

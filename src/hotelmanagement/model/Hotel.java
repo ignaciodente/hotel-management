@@ -589,4 +589,102 @@ public class Hotel {
 
         return report.toString();
     }
+
+    ///------------------------------------------------------------------- FIRST ADMINISTRATOR, ROOMS AND LISTINGS
+
+    /**
+     * Indicates whether there is at least one user in the system.
+     *
+     * @return true if there are users
+     */
+    public boolean hasUsers() {
+        return !users.list().isEmpty();
+    }
+
+    /**
+     * Creates the first administrator of the system. It does not check permissions,
+     * because nobody can log in yet, so it only works when there are no users.
+     *
+     * @param admin the first administrator
+     * @throws AccessDeniedException if there are already users in the system
+     * @throws PersistenceException if the administrator cannot be saved
+     */
+    public void createFirstAdministrator(Administrator admin)
+            throws AccessDeniedException, PersistenceException {
+
+        if (hasUsers()) {
+            throw new AccessDeniedException("El primer administrador solo se puede crear cuando no hay usuarios");
+        }
+        if (admin == null) {
+            throw new IllegalArgumentException("El administrador no puede ser null");
+        }
+
+        userRepository.insert(admin);
+        users.add(admin);
+    }
+
+    /**
+     * Adds a new room to the hotel and saves it.
+     *
+     * @param room the new room, created as available
+     * @throws AccessDeniedException if the user cannot manage rooms
+     * @throws PersistenceException if the room cannot be saved
+     */
+    public void addRoom(Room room) throws AccessDeniedException, PersistenceException {
+
+        checkPermission(Permission.MANAGE_ROOMS);
+
+        if (room == null) {
+            throw new IllegalArgumentException("La habitación no puede ser null");
+        }
+        if (room.getCapacity() <= 0) {
+            throw new IllegalArgumentException("La habitación " + room.getNumber() + " debe admitir al menos 1 huésped");
+        }
+        for (Room existing : rooms.list()) {
+            if (existing.getNumber() == room.getNumber()) {
+                throw new IllegalArgumentException("La habitación " + room.getNumber() + " ya existe");
+            }
+        }
+
+        roomRepository.insert(room);
+        rooms.add(room);
+    }
+
+    /**
+     * Returns the reservations waiting for check-in.
+     *
+     * @return the active reservations
+     */
+    public List<Reservation> listActiveReservations() {
+
+        List<Reservation> active = new ArrayList<>();
+
+        for (Reservation reservation : reservations.list()) {
+            if (reservation.getStatus() == ReservationStatus.ACTIVE) {
+                active.add(reservation);
+            }
+        }
+
+        return active;
+    }
+
+    /**
+     * Returns every room of the hotel.
+     *
+     * @return all the rooms
+     */
+    public List<Room> listRooms() {
+        return rooms.list();
+    }
+
+    /**
+     * Returns every user of the system.
+     *
+     * @return all the users
+     * @throws AccessDeniedException if the user cannot manage users
+     */
+    public List<User> listUsers() throws AccessDeniedException {
+        checkPermission(Permission.MANAGE_USERS);
+        return users.list();
+    }
 }
