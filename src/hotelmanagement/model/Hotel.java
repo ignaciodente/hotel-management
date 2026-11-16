@@ -613,10 +613,10 @@ public class Hotel {
             throws AccessDeniedException, PersistenceException {
 
         if (hasUsers()) {
-            throw new AccessDeniedException("The first administrator can only be created when there are no users");
+            throw new AccessDeniedException("El primer administrador solo se puede crear cuando no hay usuarios");
         }
         if (admin == null) {
-            throw new IllegalArgumentException("The administrator cannot be null");
+            throw new IllegalArgumentException("El administrador no puede ser null");
         }
 
         userRepository.insert(admin);
@@ -635,14 +635,14 @@ public class Hotel {
         checkPermission(Permission.MANAGE_ROOMS);
 
         if (room == null) {
-            throw new IllegalArgumentException("The room cannot be null");
+            throw new IllegalArgumentException("La habitación no puede ser null");
         }
         if (room.getCapacity() <= 0) {
-            throw new IllegalArgumentException("Room " + room.getNumber() + " must allow at least 1 guest");
+            throw new IllegalArgumentException("La habitación " + room.getNumber() + " debe admitir al menos 1 huésped");
         }
         for (Room existing : rooms.list()) {
             if (existing.getNumber() == room.getNumber()) {
-                throw new IllegalArgumentException("Room " + room.getNumber() + " already exists");
+                throw new IllegalArgumentException("La habitación " + room.getNumber() + " ya existe");
             }
         }
 

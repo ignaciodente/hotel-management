@@ -123,7 +123,7 @@ public class Stay implements Identifiable {
      */
     public void close(LocalDateTime checkOut, double basePrice) {
         if (!isActive()) {
-            throw new IllegalStateException("Stay " + stayId + " is already closed");
+            throw new IllegalStateException("La estadía " + stayId + " ya está cerrada");
         }
         this.totalAmount = computeTotal(checkOut, basePrice);
         this.checkOutDate = checkOut;
