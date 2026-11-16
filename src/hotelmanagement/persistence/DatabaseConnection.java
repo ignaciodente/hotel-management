@@ -11,7 +11,7 @@ public class DatabaseConnection {
     private static final String SERVER_URL = "jdbc:mysql://localhost:3306/?serverTimezone=America/Argentina/Buenos_Aires";
     private static final String URL = "jdbc:mysql://localhost:3306/hotel?serverTimezone=America/Argentina/Buenos_Aires";
     private static final String USER = "root";
-    private static final String PASSWORD = "contraseniawacho";
+    private static final String PASSWORD = "1234";
 
     private Connection connection;
 
