@@ -28,3 +28,7 @@ Hotel management system developed as the final project for Programming II.
 - Ignacio Dente – Part 2: Rooms and reservations
 - Lucas de la O – Part 3: Hotel and registry
 - Sami Musa Wassoof – Part 4: Persistence
+
+## Class diagram
+
+![Class diagram](docs/uml-hotel-management.png)
